@@ -8,13 +8,13 @@ license=('GPL')
 depends=('mingw-w64-crt')
 makedepends=('mingw-w64-cmake')
 options=('!buildflags' '!strip' 'staticlibs')
-source=("http://www.mixmod.org/IMG/tgz/libmixmod_${pkgver}_src.tgz")
-sha1sums=('73b3a175e111f57b3ff301cd13600160f47cf446')
+source=("git+https://github.com/reimen5125/libmixmod.git")
+sha1sums=('SKIP')
 
 _architecture="i686-w64-mingw32 x86_64-w64-mingw32"
 
 prepare () {
-  cd "$srcdir"/libmixmod_${pkgver}
+  cd "$srcdir"/libmixmod
   # install import/export libs
   sed -i "s|LIBRARY DESTINATION lib|LIBRARY DESTINATION lib ARCHIVE DESTINATION lib RUNTIME DESTINATION bin|g" SRC/CMakeLists.txt
 
@@ -23,7 +23,7 @@ prepare () {
 }
 
 build () {
-  cd "$srcdir"/libmixmod_${pkgver}
+  cd "$srcdir"/libmixmod
   for _arch in $_architecture; do
     unset LDFLAGS
     mkdir -p build-${_arch}-static && pushd build-${_arch}-static
@@ -40,9 +40,9 @@ build () {
 
 package () {
   for _arch in $_architecture; do
-    cd "$srcdir"/libmixmod_${pkgver}/build-${_arch}-static
+    cd "$srcdir"/libmixmod/build-${_arch}-static
     make install DESTDIR="$pkgdir"
-    cd "$srcdir"/libmixmod_${pkgver}/build-${_arch}
+    cd "$srcdir"/libmixmod/build-${_arch}
     make install DESTDIR="$pkgdir"
     rm -r "$pkgdir"/usr/${_arch}/share 
     ${_arch}-strip --strip-unneeded "$pkgdir"/usr/${_arch}/bin/*.dll
